@@ -7,5 +7,5 @@ import java.util.UUID;
 @Data
 public class Task {
 
-    public String name = UUID.randomUUID().toString();
+    private String name = UUID.randomUUID().toString();
 }

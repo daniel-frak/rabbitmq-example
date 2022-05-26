@@ -37,13 +37,12 @@ public class RabbitMQConfiguration {
     @Bean
     Queue workInboundWorkerQueue() {
         return QueueBuilder.nonDurable(WORK_INBOUND_WORKER_QUEUE)
-                .ttl(10000)
                 .deadLetterExchange(WORK_DISCARDED_EXCHANGE)
                 .build();
     }
 
     @Bean
-    Binding binding(Queue workInboundWorkerQueue, FanoutExchange workInboundExchange) {
+    Binding workInboundBinding(Queue workInboundWorkerQueue, FanoutExchange workInboundExchange) {
         return BindingBuilder.bind(workInboundWorkerQueue)
                 .to(workInboundExchange);
     }

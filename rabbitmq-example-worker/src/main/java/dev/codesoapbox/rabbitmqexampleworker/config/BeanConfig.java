@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfig {
 
     @Bean
-    WorkerService workerService(@Value("${processing-time-ms}") Long processingTimeMs) {
-        return new WorkerService(processingTimeMs);
+    WorkerService workerService(@Value("${processing-time-ms}") Long processingTimeMs,
+                                @Value("${fail-every-nth-task}") int failEveryNthTask) {
+        return new WorkerService(processingTimeMs, failEveryNthTask);
     }
 }

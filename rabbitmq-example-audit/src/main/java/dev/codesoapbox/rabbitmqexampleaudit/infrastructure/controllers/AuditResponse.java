@@ -4,6 +4,5 @@ public record AuditResponse(
         int producedTasks,
         int processedTasks,
         int certifiedTasks,
-        int discardedTasks
-) {
+        int discardedTasks) {
 }

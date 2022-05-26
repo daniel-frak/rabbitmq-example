@@ -18,7 +18,7 @@ graph TD
     Producer -->|"(3) certify"| certified-result[(certified-result)]
 ```
 
-The Audit service observes all messages and offers statistical data via REST endpoints.
+The Audit service observes all messages and offers analytical data via REST endpoints.
 
 ```mermaid
 
@@ -26,16 +26,36 @@ graph TD
     work-inbound[(work-inbound)] -.-> Audit
     work-outbound[(work-outbound)] -.-> Audit
     certified-result[(cerfitied-result)] -.-> Audit
+    work-discarded[(work-discarded)] -.-> Audit
 ```
+
+A task is considered stale if it has not been completely processed within 10 seconds - such tasks are discarded and
+end up in the `work-discarded` Dead Letter exchange. 
 
 ## Getting Started
 
-[TBD]
+To run all services and their dependencies, go to `./docker` then run `docker-compose up -d`.
 
 The microservices will be available under the following URLs:
-- producer - http://localhost:8080
-- worker - http://localhost:8081
-- audit - http://localhost:8082
+- Producer - http://localhost:8080
+- Worker - http://localhost:8081
+- Audit - http://localhost:8082
+
+The Producer can be enabled by visiting http://localhost:8080/enable
+and disabled using http://localhost:8080/disable.
+Additionally, it can be enabled for a given time using the `enable-timed` endpoint, e.g.:
+
+http://localhost:8080/enable-timed?time-ms=30000
+
+The Audit information can be viewed by visiting http://localhost:8082.
+
+## Configuration properties
+
+The Producer's pace of producing tasks can be altered using the `task-pace-ms` property.
+
+The Worker's pace of processing tasks can be altered using the `processing-time-ms` property.
+It can also be configured to fail every nth task using the `fail-every-nth-task` property
+(a value of `0` means no tasks will fail).
 
 ## Code analysis
 

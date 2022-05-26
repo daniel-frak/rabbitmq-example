@@ -15,6 +15,7 @@
     <description>rabbitmq-example-producer</description>
     <properties>
         <java.version>17</java.version>
+        <jacoco.version>0.8.7</jacoco.version>
     </properties>
     <dependencies>
         <dependency>
@@ -70,4 +71,55 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Code coverage report generation -->
+        <profile>
+            <id>code-coverage</id>
+            <properties>
+                <env>test</env>
+                <gebEnv>test</gebEnv>
+                <jacoco.skip>false</jacoco.skip>
+                <maven.test.skip>false</maven.test.skip>
+                <skip.unit.tests>false</skip.unit.tests>
+                <sonar.exclusions>**/BackityApplication.java,**/**Config.java</sonar.exclusions>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.version}</version>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+    </profiles>
 </project>

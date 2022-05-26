@@ -9,6 +9,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -19,7 +20,7 @@ public class TaskScheduler {
     private final ProducerService producerService;
     private final RabbitTemplate rabbitTemplate;
 
-    private final AtomicBoolean enabled = new AtomicBoolean(true);
+    private final AtomicBoolean enabled = new AtomicBoolean(false);
 
     public void setEnabled(boolean isEnabled) {
         this.enabled.set(isEnabled);
@@ -33,7 +34,12 @@ public class TaskScheduler {
 
         Task task = producerService.produceTask();
         log.info("Scheduling task: {}", task);
-        rabbitTemplate.convertAndSend(RabbitMQConfiguration.WORK_INBOUND_EXCHANGE, "", task);
+        rabbitTemplate.convertAndSend(RabbitMQConfiguration.WORK_INBOUND_EXCHANGE, "", task,
+                message -> {
+                    message.getMessageProperties().setTimestamp(new Date());
+                    message.getMessageProperties().setExpiration("10000");
+                    return message;
+                });
         log.info("Task scheduled: {}", task);
     }
 }

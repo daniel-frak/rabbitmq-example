@@ -10,7 +10,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Slf4j
 @Component
@@ -22,12 +22,29 @@ public class WorkInboundListener {
 
     @RabbitListener(queues = RabbitMQConfiguration.WORK_INBOUND_WORKER_QUEUE)
     public void onMessage(Task task, Message message) {
-        Date messageTimestamp = message.getMessageProperties().getTimestamp();
-        var messageTtl = message.getMessageProperties().getExpiration();
-        log.info("Message timestamp: " + messageTimestamp + ", ttl: " + messageTtl);
         Task performedTask = workerService.performTask(task);
+        String expiration = calculateNewExpiration(message);
+        if (expiration == null) {
+            log.info("Discarding task: {}", performedTask);
+            rabbitTemplate.convertAndSend(RabbitMQConfiguration.WORK_DISCARDED_EXCHANGE, "", performedTask);
+            return;
+        }
         log.info("Sending processed task: {}", performedTask);
-        rabbitTemplate.convertAndSend(RabbitMQConfiguration.WORK_OUTBOUND_EXCHANGE, "", performedTask);
+        rabbitTemplate.convertAndSend(RabbitMQConfiguration.WORK_OUTBOUND_EXCHANGE, "", performedTask,
+                newMessage -> {
+                    newMessage.getMessageProperties().setTimestamp(message.getMessageProperties().getTimestamp());
+                    newMessage.getMessageProperties().setExpiration(expiration);
+                    return newMessage;
+                });
         log.info("Processed task sent: {}", performedTask);
+    }
+
+    private String calculateNewExpiration(Message message) {
+        long timestampMs = message.getMessageProperties().getTimestamp().toInstant().toEpochMilli();
+        long elapsedTimeMs = Instant.now().toEpochMilli() - timestampMs;
+        long newExpiration = Long.parseLong(message.getMessageProperties().getExpiration()) - elapsedTimeMs;
+        return newExpiration > 0
+                ? String.valueOf(newExpiration)
+                : null;
     }
 }

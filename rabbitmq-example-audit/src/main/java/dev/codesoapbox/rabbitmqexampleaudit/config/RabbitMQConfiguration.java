@@ -83,4 +83,10 @@ public class RabbitMQConfiguration {
         return BindingBuilder.bind(certifiedResultAuditQueue)
                 .to(workOutboundExchange);
     }
+
+    @Bean
+    Binding workDiscardedBinding(Queue workDiscardedAuditQueue, FanoutExchange workDiscardedExchange) {
+        return BindingBuilder.bind(workDiscardedAuditQueue)
+                .to(workDiscardedExchange);
+    }
 }

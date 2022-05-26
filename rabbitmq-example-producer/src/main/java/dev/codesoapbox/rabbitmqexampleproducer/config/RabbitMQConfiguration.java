@@ -48,7 +48,7 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
-    Binding binding(Queue workOutboundWorkerQueue, FanoutExchange workOutboundExchange) {
+    Binding workOutboundBinding(Queue workOutboundWorkerQueue, FanoutExchange workOutboundExchange) {
         return BindingBuilder.bind(workOutboundWorkerQueue)
                 .to(workOutboundExchange);
     }

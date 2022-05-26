@@ -32,9 +32,9 @@ public class AuditListener {
         eventCounterService.incrementCertifiedTasks();
     }
 
-    @RabbitListener(queues = RabbitMQConfiguration.CERTIFIED_RESULT_AUDIT_QUEUE)
+    @RabbitListener(queues = RabbitMQConfiguration.WORK_DISCARDED_QUEUE)
     public void onDiscardedMessage(Object payload) {
         log.info("Observing discarded work: {}", payload);
-        eventCounterService.incrementCertifiedTasks();
+        eventCounterService.incrementDiscardedTasks();
     }
 }
