@@ -32,6 +32,13 @@ graph TD
 A task is considered stale if it has not been completely processed within 10 seconds - such tasks are discarded and
 end up in the `work-discarded` Dead Letter exchange. 
 
+## Prerequisites
+
+* JDK 17+
+* [Maven](https://maven.apache.org/) (or you can use `mvnw` provided in the project)
+* [Docker](https://docs.docker.com/get-docker/)
+* [Docker-compose](https://docs.docker.com/compose/)
+
 ## Getting Started
 
 To run all services and their dependencies, go to `./docker` then run `docker-compose up -d`.
