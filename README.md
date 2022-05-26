@@ -25,7 +25,7 @@ The Audit service observes all messages and offers analytical data via REST endp
 graph TD
     work-inbound[(work-inbound)] -.-> Audit
     work-outbound[(work-outbound)] -.-> Audit
-    certified-result[(cerfitied-result)] -.-> Audit
+    certified-result[(certified-result)] -.-> Audit
     work-discarded[(work-discarded)] -.-> Audit
 ```
 
