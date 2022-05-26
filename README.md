@@ -8,6 +8,26 @@ This is an example of a RabbitMQ setup with 3 microservices:
 - a worker
 - an audit service
 
+The Producer produces tasks at a constant pace, sending them to the `work-inbound` exchange.
+These tasks are processed by the Worker, which sends the results to the `work-outbound` exchange.
+The Producer certifies the results and sends them to the `certified-results` exchange.
+```mermaid
+graph TD
+    Producer  -->|"(1) produce task"| work-inbound[(work-inbound)] -.-> Worker
+    Worker -->|"(2) do work"| work-outbound[(work-outbound)] -.-> Producer
+    Producer -->|"(3) certify"| certified-result[(certified-result)]
+```
+
+The Audit service observes all messages and offers statistical data via REST endpoints.
+
+```mermaid
+
+graph TD
+    work-inbound[(work-inbound)] -.-> Audit
+    work-outbound[(work-outbound)] -.-> Audit
+    certified-result[(cerfitied-result)] -.-> Audit
+```
+
 ## Getting Started
 
 [TBD]

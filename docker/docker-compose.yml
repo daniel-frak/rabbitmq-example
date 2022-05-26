@@ -28,5 +28,19 @@ services:
     networks:
       - internal
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    environment:
+      - RABBITMQ_DEFAULT_USER=$RABBITMQ_USER
+      - RABBITMQ_DEFAULT_PASS=$RABBITMQ_PASS
+    ports:
+      # AMQP protocol port
+      - "5672:5672"
+      # HTTP management UI
+      - "15672:15672"
+    networks:
+      - internal
+
 networks:
   internal:
